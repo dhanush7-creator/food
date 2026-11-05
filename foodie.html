@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodie - Food Delivery App</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        header {
+            background: #ff5722;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        header input {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            width: 250px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 55px 15px;
+            background: #ffe0b2;
+        }
+
+        .hero h2 {
+            font-size: 35px;
+            color: #e64a19;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 18px;
+        }
+
+        .container {
+            padding: 35px 7%;
+        }
+
+        .container h2 {
+            margin-bottom: 25px;
+            font-size: 26px;
+        }
+
+        .food-menu {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px #ddd;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        .food-card img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+        }
+
+        .food-card h3 {
+            margin: 15px 0 8px;
+        }
+
+        .food-card p {
+            color: #ff5722;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        button {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e64a19;
+        }
+
+        .cart {
+            background: white;
+            margin: 30px 7%;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #ddd;
+        }
+
+        .cart h2 {
+            margin-bottom: 15px;
+        }
+
+        #cart-items {
+            margin: 15px 0;
+            line-height: 2;
+        }
+
+        .total {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🍔 Foodie</h1>
+        <input type="text" id="search"
+        placeholder="Search your favourite food..."
+        oninput="searchFood()">
+    </header>
+
+    <section class="hero">
+        <h2>Delicious Food Delivered!</h2>
+        <p>Order your favourite food from your home.</p>
+    </section>
+
+    <section class="container">
+        <h2>Our Food Menu 🍕</h2>
+
+        <div class="food-menu" id="food-menu">
+
+            <div class="food-card" data-name="Pizza">
+                <img src="https://images.unsplash.com/photo- pizza"
+                alt="Pizza"
+                onerror="this.src='https://placehold.co/400x200?text=Pizza'">
+                <h3>Pizza</h3>
+                <p>₹199</p>
+                <button onclick="addToCart('Pizza',199)">
+                    Add to Cart
+                </button>
+            </div>
+
+            <div class="food-card" data-name="Burger">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+                alt="Burger">
+                <h3>Burger</h3>
+                <p>₹129</p>
+                <button onclick="addToCart('Burger',129)">
+                    Add to Cart
+                </button>
+            </div>
+
+            <div class="food-card" data-name="Biryani">
+                <img src="https://images.unsplash.com/photo-1563379091339-03246963d96c"
+                alt="Biryani">
+                <h3>Chicken Biryani</h3>
+                <p>₹249</p>
+                <button onclick="addToCart('Biryani',249)">
+                    Add to Cart
+                </button>
+            </div>
+
+            <div class="food-card" data-name="Dosa">
+                <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc"
+                alt="Dosa">
+                <h3>Dosa</h3>
+                <p>₹80</p>
+                <button onclick="addToCart('Dosa',80)">
+                    Add to Cart
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="cart">
+        <h2>🛒 Your Shopping Cart</h2>
+
+        <div id="cart-items">
+            Your cart is empty.
+        </div>
+
+        <div class="total">
+            Total: ₹<span id="total">0</span>
+        </div>
+
+        <button onclick="checkout()">
+            Place Order
+        </button>
+    </section>
+
+    <footer>
+        <p>© 2026 Foodie Food Delivery App</p>
+        <p>Made with ❤️ using HTML, CSS & JavaScript</p>
+    </footer>
+
+    <script>
+        let cart = {};
+
+        function addToCart(name, price) {
+            if (cart[name]) {
+                cart[name].quantity++;
+            } else {
+                cart[name] = {
+                    price: price,
+                    quantity: 1
+                };
+            }
+
+            displayCart();
+        }
+
+        function displayCart() {
+            let cartItems =
+                document.getElementById("cart-items");
+
+            let total = 0;
+            cartItems.innerHTML = "";
+
+            if (Object.keys(cart).length === 0) {
+                cartItems.innerHTML = "Your cart is empty.";
+            }
+
+            for (let name in cart) {
+                let item = cart[name];
+
+                let subtotal =
+                    item.price * item.quantity;
+
+                total += subtotal;
+
+                cartItems.innerHTML += `
+                    <div>
+                        ${name} - ₹${item.price}
+                        x ${item.quantity}
+                        <button onclick="removeItem('${name}')">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            }
+
+            document.getElementById("total").innerText =
+                total;
+        }
+
+        function removeItem(name) {
+            if (cart[name]) {
+                cart[name].quantity--;
+
+                if (cart[name].quantity <= 0) {
+                    delete cart[name];
+                }
+            }
+
+            displayCart();
+        }
+
+        function searchFood() {
+            let search = document
+                .getElementById("search")
+                .value.toLowerCase();
+
+            let foods =
+                document.querySelectorAll(".food-card");
+
+            foods.forEach(food => {
+                let name =
+                    food.dataset.name.toLowerCase();
+
+                food.style.display =
+                    name.includes(search) ? "block" : "none";
+            });
+        }
+
+        function checkout() {
+            if (Object.keys(cart).length === 0) {
+                alert("Please add food to your cart!");
+                return;
+            }
+
+            alert(
+                "Your order has been placed successfully! 🎉"
+            );
+
+            cart = {};
+            displayCart();
+        }
+    </script>
+
+</body>
+</html>
